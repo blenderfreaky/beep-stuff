@@ -1,9 +1,8 @@
-net.ip=*IP*
-net.port=*PORT*
-
-
-
 ui.font=Blocked-48.vlw
 ui.neutral=FF949494
 ui.red=FF940000
 ui.blue=FF000094
+
+
+net.ip=localhost
+net.port=25565

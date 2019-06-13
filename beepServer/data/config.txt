@@ -1,7 +1,3 @@
-net.port=*PORT*
-
-
-
 player.hp=1500
 player.money=200000
 player.eco=10000
@@ -60,3 +56,6 @@ controls.key4=w
 controls.confirm=ENTER
 controls.confirm_alt=RETURN
 controls.input_scale=0.1
+
+
+net.port=25565
