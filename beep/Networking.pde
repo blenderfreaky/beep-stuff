@@ -1,6 +1,9 @@
 void computeMessage(String input) {
   println(input);
   
+  String[] inputSplitted = input.split("~");
+  String id = inputSplitted[0];
+  if (inputSplitted.length > 1) input = inputSplitted[1];
   
   if (input.startsWith("teams")) {
     input = input.substring(5);
@@ -165,29 +168,5 @@ void computeMessage(String input) {
       
       players[team][number].done = true;
     }
-  }
-}
-
-//Taken from https://forum.processing.org/one/topic/get-the-ip-address-of-the-host-computer.html
-import java.net.InetAddress;
-
-String getIP() {
-  if (isHost) {
-    InetAddress inet;
-    String myIP;
-    
-    try {
-      inet = InetAddress.getLocalHost();
-      myIP = inet.getHostAddress();
-    } catch (Exception e) {
-      e.printStackTrace();
-      myIP = "Couldn't retrieve IP"; 
-    }
-    
-    return myIP;
-  } else {
-    String ip = loadStrings("http://checkip.dyndns.com/")[0];
-  
-    return ip.split("<html><head><title>Current IP Check</title></head><body>Current IP Address: ")[1].split("</body></html>")[0];
   }
 }

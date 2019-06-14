@@ -1,5 +1,6 @@
 import processing.net.*;
-
+import java.util.UUID;
+ 
 PImage map;
 ArrayList<Boom> booms;
 float xs, ys;
@@ -16,10 +17,14 @@ Config config;
 
 int[] teamCount;
 
+String id;
+
 void setup() {
   size(1280, 720);
 
   config = new Config("config.txt");
+  
+  id = UUID.randomUUID().toString();
 
   reset();
 }
@@ -30,7 +35,7 @@ void reset() {
   textFont(loadFont(config.font));
 
   client = new Client(this, config.ip, config.port);
-  client.write("join");
+  client.write(id + "~join");
 
   booms = new ArrayList<Boom>();
   state = State.CONNECTING;
@@ -44,7 +49,7 @@ void draw() {
     info("Couldn't reach\nserver\nReconnecting..", color(255, 0, 0), true);
 
     client = new Client(this, config.ip, config.port);
-    client.write("join");
+  client.write(id + "~join");
 
     return;
   }
@@ -228,7 +233,7 @@ void mouseReleased() {
         boolean mouseOver = mouseX > xSlice*i && mouseY > 0 && mouseX < xSlice*(i+1) && mouseY < height;
 
         if (mouseOver) {
-          client.write("team" + i);
+          client.write(id + "~team" + i);
           return;
         }
       }

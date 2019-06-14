@@ -13,7 +13,6 @@ void setup() {
 
   server = new Server(this, config.port);
   println(server.ip(), config.port);
-  println(getIP());
 
   reset();
 }
@@ -30,22 +29,29 @@ void draw() {
     String input = client.readString();
 
     for (String message : input.split("\n")) {
-      //try {
+      try {
         computeMessage(message, client);
-    //  } catch (Exception e) {
-  //      e.printStackTrace();
-//      }
+      } catch (Exception e) {
+        e.printStackTrace();
+      }
     }
   }
 }
 
 void computeMessage(String input, Client client) {
   println("in>"+input);
-
+  
+  String[] inputSplitted = input.split("~");
+  String id = inputSplitted[0];
+  if (inputSplitted.length > 1) {
+    input = inputSplitted[1];
+    println("Message " + input + " received from " + id);
+  }
+  
   if (input.startsWith("join")) {
     broadcastTeams();
-
-    players.put(client.ip(), new Player(client.ip(), config.money, false, -1, -1));
+    
+    players.put(id, new Player(id, config.money, false, -1, -1));
   }
 
   if (input.startsWith("team")) {
@@ -56,8 +62,8 @@ void computeMessage(String input, Client client) {
     int team = Integer.parseInt(input);
     int count = countTeam(team);
 
-    Player player = players.get(client.ip());
-
+    Player player = players.get(id);
+println(player);
     if (count < config.playersPerTeam) {
       if (player.team != -1 && player.number != -1) {
         int oldTeamCount = countTeam(player.team);
@@ -287,22 +293,4 @@ void disconnectEvent(Client client) {
   teams[player.team][oldTeamCount-1] = null;
   
   broadcastTeams();
-}
-
-//Taken from https://forum.processing.org/one/topic/get-the-ip-address-of-the-host-computer.html
-import java.net.InetAddress;
-
-String getIP() {
-  InetAddress inet;
-  String myIP;
-  
-  try {
-    inet = InetAddress.getLocalHost();
-    myIP = inet.getHostAddress();
-  } catch (Exception e) {
-    e.printStackTrace();
-    myIP = "Couldn't retrieve IP"; 
-  }
-  
-  return myIP;
 }
