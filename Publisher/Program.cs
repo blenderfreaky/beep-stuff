@@ -14,18 +14,20 @@ namespace Publisher
 
         static void Publish(string dir)
         {
-            foreach (var pathDirectory in Directory.EnumerateDirectories("../../../../" + dir))
+            foreach (string pathDirectory in Directory.EnumerateDirectories($"../../../../{dir}"))
             {
-                var name = Path.GetFileName(pathDirectory);
-                if (name.StartsWith("application"))
-                {
-                    var zipPath = Path.Join(Path.GetDirectoryName(pathDirectory),
-                        "../release",
-                        dir + name.Substring(11));
-                    Directory.CreateDirectory(Path.GetDirectoryName(zipPath));
-                    File.Delete(zipPath + ".zip");
-                    ZipFile.CreateFromDirectory(pathDirectory, zipPath+".zip");
-                }
+                string name = Path.GetFileName(pathDirectory);
+
+                if (!name.StartsWith("application")) continue;
+
+                string zipPath = Path.Join(Path.GetDirectoryName(pathDirectory),
+                    "../release",
+                    dir + name.Substring(11));
+                Directory.CreateDirectory(Path.GetDirectoryName(zipPath));
+
+                Console.WriteLine($"Zipping {zipPath}.zip...");
+                ZipFile.CreateFromDirectory(pathDirectory, $"{zipPath}.zip");
+                Console.WriteLine($"Successfully Zipped {zipPath}.zip");
             }
         }
     }
