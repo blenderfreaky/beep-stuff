@@ -1,16 +1,8 @@
-<<<<<<< HEAD
 net.ip=blenderfreaky.de
 net.port=8080
 
 
-
-=======
->>>>>>> ddddfc3eee9a61814cd183eadc346cc8c27e2913
 ui.font=Blocked-48.vlw
 ui.neutral=FF949494
 ui.red=FF940000
 ui.blue=FF000094
-
-
-net.ip=localhost
-net.port=25565

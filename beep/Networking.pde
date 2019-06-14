@@ -2,7 +2,7 @@ void computeMessage(String input) {
   println(input);
   
   String[] inputSplitted = input.split("~");
-  String id = inputSplitted[0];
+  String idSender = inputSplitted[0];
   if (inputSplitted.length > 1) input = inputSplitted[1];
   
   if (input.startsWith("teams")) {
@@ -26,9 +26,7 @@ void computeMessage(String input) {
     
     String[] contents = input.split(";");
     
-    println(contents[2], getIP(), contents[2].startsWith(getIP()));
-    
-    if (contents[2].startsWith(getIP())) {
+    if (id == idSender) {
       int team = Integer.parseInt(contents[0]);
       int number = Integer.parseInt(contents[1]);
       

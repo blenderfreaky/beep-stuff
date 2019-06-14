@@ -93,7 +93,7 @@ println(player);
       for (Player target : players.values()) {
         broadcastTeams();
 
-        write("yourteam" + target.team + ";" + target.number + ";" + target.ip);
+        write(target.ip + "~yourteam" + target.team + ";" + target.number);
 
         target.selected = false;
       }

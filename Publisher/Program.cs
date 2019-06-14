@@ -23,6 +23,7 @@ namespace Publisher
                         "../release",
                         dir + name.Substring(11));
                     Directory.CreateDirectory(zipPath);
+                    File.Delete(zipPath + ".zip");
                     ZipFile.CreateFromDirectory(pathDirectory, zipPath+".zip");
                 }
             }

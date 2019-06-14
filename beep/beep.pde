@@ -34,7 +34,7 @@ void reset() {
 
   textFont(loadFont(config.font));
 
-  client = new Client(this, config.ip, config.port);
+  client = new Client(this, config.ip, config.port); //<>//
   client.write(id + "~join");
 
   booms = new ArrayList<Boom>();
