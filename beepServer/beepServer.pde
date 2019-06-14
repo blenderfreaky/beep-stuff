@@ -4,6 +4,7 @@ Server server;
 Config config;
 
 HashMap<String, Player> players;
+HashMap<String, String> clients;
 Player[][] teams;
 
 void setup() {
@@ -19,6 +20,7 @@ void setup() {
 
 void reset() {
   players = new HashMap<String, Player>();
+  clients = new HashMap<String, String>();
   teams = new Player[config.teamCount][config.playersPerTeam];
 }
 
@@ -52,6 +54,7 @@ void computeMessage(String input, Client client) {
     broadcastTeams();
     
     players.put(id, new Player(id, config.money, false, -1, -1));
+    clients.put(client.ip(), id);
   }
 
   if (input.startsWith("team")) {
@@ -131,7 +134,7 @@ println(player);
   if (input.startsWith("won")) {
     input = input.substring(3);
     
-    int team = Integer.parseInt(input);
+    //int team = Integer.parseInt(input);
   }
   
   if (input.startsWith("done")) {
@@ -282,7 +285,7 @@ Player getPlayer(String coded) {
 
 
 void disconnectEvent(Client client) {
-  Player player = players.get(client.ip());
+  Player player = players.get(clients.get(client.ip()));
   
   int oldTeamCount = countTeam(player.team);
 
