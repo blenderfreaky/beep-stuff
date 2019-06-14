@@ -1,7 +1,10 @@
+<<<<<<< HEAD
 net.port=8080
 
 
 
+=======
+>>>>>>> ddddfc3eee9a61814cd183eadc346cc8c27e2913
 player.hp=1500
 player.money=200000
 player.eco=100000
@@ -60,3 +63,6 @@ controls.key4=w
 controls.confirm=ENTER
 controls.confirm_alt=RETURN
 controls.input_scale=0.1
+
+
+net.port=25565

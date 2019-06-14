@@ -131,7 +131,7 @@ println(player);
   if (input.startsWith("won")) {
     input = input.substring(3);
     
-    //int team = Integer.parseInt(input);
+    int team = Integer.parseInt(input);
   }
   
   if (input.startsWith("done")) {
