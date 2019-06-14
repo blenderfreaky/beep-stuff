@@ -56,6 +56,12 @@ void computeMessage(String input, Client client) {
     players.put(id, new Player(id, config.money, false, -1, -1));
     clients.put(client.ip(), id);
   }
+  
+  if (input.startsWith("disconnect")) {
+    disconnect(id);
+    
+    broadcastTeams();
+  }
 
   if (input.startsWith("team")) {
     if (serverFull()) {
@@ -66,7 +72,7 @@ void computeMessage(String input, Client client) {
     int count = countTeam(team);
 
     Player player = players.get(id);
-println(player);
+    
     if (count < config.playersPerTeam) {
       if (player.team != -1 && player.number != -1) {
         int oldTeamCount = countTeam(player.team);
@@ -283,9 +289,8 @@ Player getPlayer(String coded) {
   return teams[team][number];
 }
 
-
-void disconnectEvent(Client client) {
-  Player player = players.get(clients.get(client.ip()));
+void disconnect(String id) {
+  Player player = players.get(id);
   
   int oldTeamCount = countTeam(player.team);
 
@@ -296,4 +301,8 @@ void disconnectEvent(Client client) {
   teams[player.team][oldTeamCount-1] = null;
   
   broadcastTeams();
+}
+
+void disconnectEvent(Client client) {
+  disconnect(clients.get(client.ip()));
 }

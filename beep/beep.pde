@@ -181,6 +181,10 @@ void draw() {
   }
 }
 
+void stop() {
+  client.write(id + "~disconnect");
+} 
+
 enum State {
   CONNECTING (-1), 
     JOINING (0), 
