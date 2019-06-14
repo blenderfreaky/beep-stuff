@@ -27,17 +27,18 @@ namespace Publisher
                     dir + name.Substring(11));
                 Directory.CreateDirectory(Path.GetDirectoryName(zipPath));
 
-                if (File.Exists($"{zipPath}.zip"))
+                string destinationArchiveFileName = Path.GetFileName($"{zipPath}.zip");
+                if (File.Exists(destinationArchiveFileName))
                 {
-                    Console.WriteLine($" Detected old {zipPath}.zip...");
-                    Console.WriteLine($" Deleting old {zipPath}.zip...");
-                    File.Delete($"{zipPath}.zip");
-                    Console.WriteLine($" Successfully deleted old {zipPath}.zip");
+                    Console.WriteLine($" Detected old {destinationArchiveFileName}...");
+                    Console.WriteLine($" Deleting old {destinationArchiveFileName}...");
+                    File.Delete(destinationArchiveFileName);
+                    Console.WriteLine($" Successfully deleted old {destinationArchiveFileName}");
                 }
 
-                Console.WriteLine($" Zipping {zipPath}.zip...");
-                ZipFile.CreateFromDirectory(pathDirectory, $"{zipPath}.zip");
-                Console.WriteLine($" Successfully zipped {zipPath}.zip\n");
+                Console.WriteLine($" Zipping {destinationArchiveFileName}...");
+                ZipFile.CreateFromDirectory(pathDirectory, destinationArchiveFileName);
+                Console.WriteLine($" Successfully zipped {destinationArchiveFileName}\n");
             }
             Console.WriteLine($"Successfully packed {dir}\n\n");
         }
