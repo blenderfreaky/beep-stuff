@@ -4,7 +4,7 @@ Server server;
 Config config;
 
 HashMap<String, Player> players;
-HashMap<String, String> clients;
+//HashMap<String, String> clients;
 Player[][] teams;
 
 void setup() {
@@ -20,7 +20,7 @@ void setup() {
 
 void reset() {
   players = new HashMap<String, Player>();
-  clients = new HashMap<String, String>();
+  //clients = new HashMap<String, String>();
   teams = new Player[config.teamCount][config.playersPerTeam];
 }
 
@@ -54,7 +54,7 @@ void computeMessage(String input, Client client) {
     broadcastTeams();
     
     players.put(id, new Player(id, config.money, false, -1, -1));
-    clients.put(client.ip(), id);
+    //clients.put(client.ip(), id);
   }
   
   if (input.startsWith("disconnect")) {
@@ -303,6 +303,6 @@ void disconnect(String id) {
   broadcastTeams();
 }
 
-void disconnectEvent(Client client) {
-  disconnect(clients.get(client.ip()));
-}
+//void disconnectEvent(Client client) {
+//  disconnect(clients.get(client.ip()));
+//}
