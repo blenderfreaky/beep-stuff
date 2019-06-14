@@ -15,7 +15,7 @@ namespace Publisher
 
         private static void Publish(string dir)
         {
-            Console.WriteLine($"Packing {dir}");
+            Console.WriteLine($"Packing {dir}\n");
             foreach (string pathDirectory in Directory.EnumerateDirectories($"../../../../{dir}"))
             {
                 string name = Path.GetFileName(pathDirectory);
@@ -27,11 +27,19 @@ namespace Publisher
                     dir + name.Substring(11));
                 Directory.CreateDirectory(Path.GetDirectoryName(zipPath));
 
+                if (File.Exists($"{zipPath}.zip"))
+                {
+                    Console.WriteLine($" Detected old {zipPath}.zip...");
+                    Console.WriteLine($" Deleting old {zipPath}.zip...");
+                    File.Delete($"{zipPath}.zip");
+                    Console.WriteLine($" Successfully deleted old {zipPath}.zip");
+                }
+
                 Console.WriteLine($" Zipping {zipPath}.zip...");
                 ZipFile.CreateFromDirectory(pathDirectory, $"{zipPath}.zip");
-                Console.WriteLine($" Successfully Zipped {zipPath}.zip");
+                Console.WriteLine($" Successfully zipped {zipPath}.zip\n");
             }
-            Console.WriteLine($"Successfully packed {dir}");
+            Console.WriteLine($"Successfully packed {dir}\n\n");
         }
     }
 }
