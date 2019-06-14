@@ -22,7 +22,7 @@ namespace Publisher
                     var zipPath = Path.Join(Path.GetDirectoryName(pathDirectory),
                         "../release",
                         dir + name.Substring(11));
-                    Directory.CreateDirectory(zipPath);
+                    Directory.CreateDirectory(Path.GetDirectoryName(zipPath));
                     File.Delete(zipPath + ".zip");
                     ZipFile.CreateFromDirectory(pathDirectory, zipPath+".zip");
                 }
