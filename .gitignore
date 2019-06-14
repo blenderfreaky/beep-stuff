@@ -359,6 +359,7 @@ application.windows32
 application.windows64
 application.macosx
 release/*
+beep/data/server-config.txt
 
 ### VisualStudioCode ###
 .vscode/*
