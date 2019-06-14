@@ -1,6 +1,3 @@
-net.port=8080
-
-
 player.hp=1500
 player.money=200000
 player.eco=100000

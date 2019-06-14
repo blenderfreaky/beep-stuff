@@ -1,7 +1,3 @@
-net.ip=blenderfreaky.de
-net.port=25565
-
-
 ui.font=Blocked-48.vlw
 ui.neutral=FF949494
 ui.red=FF940000

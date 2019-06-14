@@ -360,6 +360,8 @@ application.windows64
 application.macosx
 release/*
 beep/data/server-config.txt
+beep/data/config.txt
+beepServer/data/config.txt
 
 ### VisualStudioCode ###
 .vscode/*

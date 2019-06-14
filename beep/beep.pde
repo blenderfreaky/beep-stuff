@@ -21,8 +21,8 @@ String id;
 
 void setup() {
   size(1280, 720);
-
-  config = new Config("config.txt");
+  
+  config = new Config("config.txt", "default-config.txt");
   
   id = UUID.randomUUID().toString();
 
@@ -30,7 +30,7 @@ void setup() {
 }
 
 void reset() {
-  config = new Config("config.txt");
+  config = new Config("config.txt", "default-config.txt");
 
   textFont(loadFont(config.font));
 

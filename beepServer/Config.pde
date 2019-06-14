@@ -44,13 +44,26 @@ class Config {
   int port;
   
   Config(String file) {
-    try {
-      String[] contents = loadStrings(file);
+    String[] contents = loadStrings(file);
       
-      deserialize(contents);
-    } catch (Exception e) {
+    deserialize(contents);
+  }
+  
+  Config(String file, String defaultFile) {
+    String[] contents = null;
+    try { 
+      contents = loadStrings(file);
+    } 
+    catch(Exception e) { 
       e.printStackTrace();
-      println("Error loading config file");
+    }
+    
+    if (contents == null) {
+      contents = loadStrings(defaultFile);
+      deserialize(contents);
+      saveStrings("data/" + file, serialize());
+    } else {
+      deserialize(contents);
     }
   }
   

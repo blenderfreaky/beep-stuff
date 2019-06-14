@@ -10,7 +10,7 @@ Player[][] teams;
 void setup() {
   size(175, 1);
   
-  config = new Config("config.txt");
+  config = new Config("config.txt", "default-config.txt");
 
   server = new Server(this, config.port);
   println(server.ip(), config.port);
@@ -19,6 +19,8 @@ void setup() {
 }
 
 void reset() {
+  config = new Config("config.txt", "default-config.txt");
+  
   players = new HashMap<String, Player>();
   //clients = new HashMap<String, String>();
   teams = new Player[config.teamCount][config.playersPerTeam];
