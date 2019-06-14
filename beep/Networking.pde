@@ -3,7 +3,10 @@ void computeMessage(String input) {
   
   String[] inputSplitted = input.split("~");
   String idSender = inputSplitted[0];
-  if (inputSplitted.length > 1) input = inputSplitted[1];
+  if (inputSplitted.length > 1) {
+    input = inputSplitted[1];
+    println("Message " + input + " received from " + idSender);
+  }
   
   if (input.startsWith("teams")) {
     input = input.substring(5);
@@ -26,7 +29,7 @@ void computeMessage(String input) {
     
     String[] contents = input.split(";");
     
-    if (id == idSender) {
+    if (id.trim().equals(idSender.trim())) {
       int team = Integer.parseInt(contents[0]);
       int number = Integer.parseInt(contents[1]);
       

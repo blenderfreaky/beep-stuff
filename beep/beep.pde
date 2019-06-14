@@ -34,7 +34,7 @@ void reset() {
 
   textFont(loadFont(config.font));
 
-  client = new Client(this, config.ip, config.port); //<>//
+  client = new Client(this, config.ip, config.port);
   client.write(id + "~join");
 
   booms = new ArrayList<Boom>();
@@ -47,7 +47,7 @@ void draw() {
   
   if (!client.active()) {
     info("Couldn't reach\nserver\nReconnecting..", color(255, 0, 0), true);
-
+    
     client = new Client(this, config.ip, config.port);
   client.write(id + "~join");
 
@@ -223,7 +223,7 @@ void info(String text, color player, boolean block) {
 }
 
 void mouseReleased() {
-  if (mouseButton == LEFT) {
+  if (mouseButton == LEFT) { //<>//
     if (state == State.JOINING) {
       float xSlice = width/config.teamCount;
 
@@ -240,6 +240,7 @@ void mouseReleased() {
     }
 
     if (state == State.SPAWNING) {
+      println(mePlayer);
       client.write("done"+mePlayer.team+";"+mePlayer.number+"\n");
       entered = true;
     }

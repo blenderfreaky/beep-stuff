@@ -1,5 +1,5 @@
 net.ip=blenderfreaky.de
-net.port=8080
+net.port=25565
 
 
 ui.font=Blocked-48.vlw
