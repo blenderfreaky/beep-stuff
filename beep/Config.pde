@@ -43,25 +43,26 @@ class Config {
   String ip;
   int port;
 
-  Config(String file) {
+  Config(String file) throws Exception {
     String[] contents = loadStrings(file);
 
     deserialize(contents);
   }
 
-  Config(String file, String defaultFile) {
+  Config(String file, String defaultFile) throws Exception {
     String[] contents = null;
+
     try { 
       contents = loadStrings(file);
     } 
     catch(Exception e) { 
       e.printStackTrace();
     }
-    
+
     if (contents == null) {
       contents = loadStrings(defaultFile);
-      deserialize(contents);
-      saveStrings("data/" + file, serialize());
+      deserializeClient(contents);
+      saveStrings("data/" + file, serializeClient());
     } else {
       deserialize(contents);
     }
@@ -124,9 +125,45 @@ class Config {
     }
   }
 
-  void deserialize(String[] contents) {
+  void deserializeClient(String[] contents) throws Exception {
     for (String line : contents) {
       String[] components = line.replace(" ", "").split("="); 
+
+      if (components.length != 2) throw new Exception("Invalid config file, wrong number of arguments. Expected 2, got " + components.length);
+
+      switch (components[0]) {
+      case "ui.font": 
+        font = components[1]; 
+        break;
+      case "ui.neutral": 
+        neutral = unhex(components[1]); 
+        break;
+      case "ui.red": 
+        red = unhex(components[1]); 
+        break;
+      case "ui.blue": 
+        blue = unhex(components[1]); 
+        break;
+
+      case "net.ip": 
+        ip = components[1]; 
+        break;
+      case "net.port": 
+        port = Integer.parseInt(components[1]); 
+        break;
+      default: 
+        break;
+      }
+    }
+  }
+  
+  void deserialize(String[] contents) throws Exception {
+    deserializeClient(contents); //TODO: This is very inefficient
+
+    for (String line : contents) {
+      String[] components = line.replace(" ", "").split("="); 
+
+      if (components.length != 2) throw new Exception("Invalid config file, wrong number of arguments. Expected 2, got " + components.length);
 
       switch (components[0]) {
       case "player.hp": 
@@ -243,20 +280,6 @@ class Config {
         break;
 
 
-      case "ui.font": 
-        font = components[1]; 
-        break;
-      case "ui.neutral": 
-        neutral = unhex(components[1]); 
-        break;
-      case "ui.red": 
-        red = unhex(components[1]); 
-        break;
-      case "ui.blue": 
-        blue = unhex(components[1]); 
-        break;
-
-
       case "controls.key0": 
         key0 = decodeChar(components[1]); 
         break;
@@ -282,19 +305,28 @@ class Config {
         inputScale = Float.parseFloat(components[1]); 
         break;
 
-
-      case "net.ip": 
-        ip = components[1]; 
-        break;
-      case "net.port": 
-        port = Integer.parseInt(components[1]); 
-        break;
       default: 
         break;
       }
     }
   }
 
+  String[] serializeClient() {
+    ArrayList<String> contents = new ArrayList<String>();
+
+
+    contents.add("ui.font="+font);
+    contents.add("ui.neutral="+hex(neutral));
+    contents.add("ui.red="+hex(red));
+    contents.add("ui.blue="+hex(blue));
+
+
+    contents.add("net.ip="+ip);
+    contents.add("net.port="+port);
+
+    return contents.toArray(new String[0]);
+  }
+  
   String[] serialize() {
     ArrayList<String> contents = new ArrayList<String>();
 
