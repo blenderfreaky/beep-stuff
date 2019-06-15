@@ -405,8 +405,8 @@ void error(Exception e) {
     "Message: " + e.getMessage(), 
     "Localized Message: " + e.getLocalizedMessage(), 
     "Cause: " + e.getCause(), 
-    "Stack Trace: " + e.getStackTrace(), 
-    "Supressed: " + e.getSuppressed(), 
+    "Stack Trace: " + e.getStackTrace().toString(), 
+    "Supressed: " + e.getSuppressed().toString(), 
     });
     
   javax.swing.JOptionPane.showMessageDialog(null, "Unexpected error occured: \n" + e.toString() + "\nSee error.txt for more details");
