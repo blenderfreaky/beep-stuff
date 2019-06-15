@@ -1,4 +1,4 @@
-void computeMessage(String input) {
+void computeMessage(String input) throws Exception {
   println(input);
   
   String[] inputSplitted = input.split("~");

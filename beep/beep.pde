@@ -1,6 +1,6 @@
-import processing.net.*;
+import processing.net.*; //<>//
 import java.util.UUID;
- 
+
 PImage map;
 ArrayList<Boom> booms;
 float xs, ys;
@@ -21,15 +21,20 @@ String id;
 
 void setup() {
   size(1280, 720);
-  
-  config = new Config("config.txt", "default-config.txt");
-  
-  id = UUID.randomUUID().toString();
 
-  reset();
+  try {
+    config = new Config("config.txt", "default-config.txt");
+
+    id = UUID.randomUUID().toString();
+
+    reset();
+  }
+  catch (Exception e) {
+    error(e);
+  }
 }
 
-void reset() {
+void reset() throws Exception {
   config = new Config("config.txt", "default-config.txt");
 
   textFont(loadFont(config.font));
@@ -42,142 +47,147 @@ void reset() {
 }
 
 void draw() {
-  //mouseX = min(width, max(0, mouseX));
-  //mouseY = min(height, max(0, mouseY));
-  
-  if (!client.active()) {
-    info("Couldn't reach\nserver\nReconnecting..", color(255, 0, 0), true);
-    
-    client = new Client(this, config.ip, config.port);
-  client.write(id + "~join");
+  try {
+    //mouseX = min(width, max(0, mouseX));
+    //mouseY = min(height, max(0, mouseY));
 
-    return;
-  }
+    if (!client.active()) {
+      info("Couldn't reach\nserver\nReconnecting..", color(255, 0, 0), true);
 
-  if (client.available() > 0) { 
-    String input = client.readString(); 
+      client = new Client(this, config.ip, config.port);
+      client.write(id + "~join");
 
-    for (String message : input.split("\n")) {
-      //try {
-      computeMessage(message);
-      //} catch (Exception e) {
-      //e.printStackTrace();
-      //}
+      return;
     }
-  }
 
-  if (state == State.CONNECTING) {
-    info("Waiting for\nserver response", color(255), true);
-  }
+    if (client.available() > 0) { 
+      String input = client.readString(); 
 
-  if (state == State.JOINING) {
-    background(0, 0, 35);
-
-    if (teamCount != null) {
-      float xSlice = width/config.teamCount;
-      float off;
-
-      noStroke();
-      textSize(40);
-      textAlign(CENTER, CENTER);
-
-      for (int i = 0; i < config.teamCount; i++) {
-        boolean mouseOver = mouseX > xSlice*i && mouseY > 0 && mouseX < xSlice*(i+1) && mouseY < height;
-
-        fill(lerpColor(teamColor(i), color(0), mePlayer != null && mePlayer.team == i ? 0.5 : (mouseOver ? 0.2 : 0)));
-        off = mouseOver ? 50 : 100;
-        rect(xSlice*i+off, off, xSlice - off*2, height - off*2);
-
-        fill(0, 0, 35);
-        text(teamCount[i] + " : " + config.playersPerTeam, xSlice*(i+0.5), height/2);
+      for (String message : input.split("\n")) {
+        //try {
+        computeMessage(message);
+        //} catch (Exception e) {
+        //e.printStackTrace();
+        //}
       }
     }
-  }
 
-  if (state.value() > State.JOINING.value()) {
-    background(0, 0, 35);
-    image(map, 0, 0);
-  }
+    if (state == State.CONNECTING) {
+      info("Waiting for\nserver response", color(255), true);
+    }
 
-  if (state == State.SPAWNING) {
-    if (mePlayer != null) {
-      for (int i = 0; i < config.teamCount; i++) {
-        for (int j = 0; j < config.playersPerTeam; j++) {
-          players[i][j].draw();
+    if (state == State.JOINING) {
+      background(0, 0, 35);
+
+      if (teamCount != null) {
+        float xSlice = width/config.teamCount;
+        float off;
+
+        noStroke();
+        textSize(40);
+        textAlign(CENTER, CENTER);
+
+        for (int i = 0; i < config.teamCount; i++) {
+          boolean mouseOver = mouseX > xSlice*i && mouseY > 0 && mouseX < xSlice*(i+1) && mouseY < height;
+
+          fill(lerpColor(teamColor(i), color(0), mePlayer != null && mePlayer.team == i ? 0.5 : (mouseOver ? 0.2 : 0)));
+          off = mouseOver ? 50 : 100;
+          rect(xSlice*i+off, off, xSlice - off*2, height - off*2);
+
+          fill(0, 0, 35);
+          text(teamCount[i] + " : " + config.playersPerTeam, xSlice*(i+0.5), height/2);
         }
       }
     }
-  }
-  
-  if (state == State.GAME || state == State.PAUSE || state == State.END) {
-    if (state == State.GAME && mePlayer.alive) {
-      stroke(255);
-      parabola(mePlayer.xp, mePlayer.yp, (mouseX-mePlayer.xp)*config.inputScale, (mouseY-mePlayer.yp)*config.inputScale, 0, mePlayer.me);
-      stroke(lerpColor(mePlayer.me, color(0), 0.5));
-      parabola(mePlayer.xp, mePlayer.yp, (mouseX-mePlayer.xp)*config.inputScale, (mouseY-mePlayer.yp)*config.inputScale, 4, mePlayer.me);
+
+    if (state.value() > State.JOINING.value()) {
+      background(0, 0, 35);
+      image(map, 0, 0);
     }
 
-    map.loadPixels();
-    for (int i = 0; i < booms.size(); i++) {
-      Boom boom = booms.get(i);
-
-      if (!boom.alive) {
-        booms.remove(boom);
-        i--;
-      } else {
-        boom.draw();
-      }
-    }
-    map.updatePixels();
-
-    for (int i = 0; i < config.teamCount; i++) {
-      for (int j = 0; j < config.playersPerTeam; j++) {
-        players[i][j].update();
-      }
-    }
-
-    noStroke();
-    fill(lerpColor(mePlayer.done ? neutral : mePlayer.me, color(0), 0.5));
-    rect(10, 10, 300, 50);
-    fill(lerpColor(mePlayer.done ? neutral : mePlayer.me, color(255), 0.2));
-    rect(10, 10, max(0, mePlayer.hp/config.hp*300), 50);
-    textSize(80);
-    textAlign(LEFT, TOP);
-    text(mePlayer.money, 10, 10+70+10);
-    textSize(40);
-    text(mePlayer.eco, 10, 10+70+10+80+10);
-
-    if (state == State.PAUSE && booms.size() == 0) {
-      boolean ready = true;
-
-      for (int i = 0; i < config.teamCount; i++) {
-        for (int j = 0; j < config.playersPerTeam; j++) {
-          if (!players[i][j].alive ? false : (players[i][j].xv != 0 || players[i][j].yv != 0)) {
-            ready = false;
+    if (state == State.SPAWNING) {
+      if (mePlayer != null) {
+        for (int i = 0; i < config.teamCount; i++) {
+          for (int j = 0; j < config.playersPerTeam; j++) {
+            players[i][j].draw();
           }
         }
       }
-
-      if (ready) client.write("ready"+mePlayer.team+";"+mePlayer.number+"\n");
     }
 
-    if (mePlayer.hp <= 0) {
-      client.write("done"+mePlayer.team+";"+mePlayer.number+"\n");
+    if (state == State.GAME || state == State.PAUSE || state == State.END) {
+      if (state == State.GAME && mePlayer.alive) {
+        stroke(255);
+        parabola(mePlayer.xp, mePlayer.yp, (mouseX-mePlayer.xp)*config.inputScale, (mouseY-mePlayer.yp)*config.inputScale, 0, mePlayer.me);
+        stroke(lerpColor(mePlayer.me, color(0), 0.5));
+        parabola(mePlayer.xp, mePlayer.yp, (mouseX-mePlayer.xp)*config.inputScale, (mouseY-mePlayer.yp)*config.inputScale, 4, mePlayer.me);
+      }
+
+      map.loadPixels();
+      for (int i = 0; i < booms.size(); i++) {
+        Boom boom = booms.get(i);
+
+        if (!boom.alive) {
+          booms.remove(boom);
+          i--;
+        } else {
+          boom.draw();
+        }
+      }
+      map.updatePixels();
+
+      for (int i = 0; i < config.teamCount; i++) {
+        for (int j = 0; j < config.playersPerTeam; j++) {
+          players[i][j].update();
+        }
+      }
+
+      noStroke();
+      fill(lerpColor(mePlayer.done ? neutral : mePlayer.me, color(0), 0.5));
+      rect(10, 10, 300, 50);
+      fill(lerpColor(mePlayer.done ? neutral : mePlayer.me, color(255), 0.2));
+      rect(10, 10, max(0, mePlayer.hp/config.hp*300), 50);
+      textSize(80);
+      textAlign(LEFT, TOP);
+      text(mePlayer.money, 10, 10+70+10);
+      textSize(40);
+      text(mePlayer.eco, 10, 10+70+10+80+10);
+
+      if (state == State.PAUSE && booms.size() == 0) {
+        boolean ready = true;
+
+        for (int i = 0; i < config.teamCount; i++) {
+          for (int j = 0; j < config.playersPerTeam; j++) {
+            if (!players[i][j].alive ? false : (players[i][j].xv != 0 || players[i][j].yv != 0)) {
+              ready = false;
+            }
+          }
+        }
+
+        if (ready) client.write("ready"+mePlayer.team+";"+mePlayer.number+"\n");
+      }
+
+      if (mePlayer.hp <= 0) {
+        client.write("done"+mePlayer.team+";"+mePlayer.number+"\n");
+      }
+    }
+
+    if (entered) {
+      fill(neutral, 31);
+      rect(-1, -1, width+1, height+1);
+    }
+
+    if (mePlayer != null && !entered && state == State.SPAWNING) {
+      client.write("spawnat"+mouseX+";"+mouseY+";"+mePlayer.team+";"+mePlayer.number+"\n");
+    }
+
+    if (state == State.END) {
+      if (winner == -1) info("Draw", color(255), false);
+      else info("Team " + winner + " won!", teamColor(winner), false);
     }
   }
-
-  if (entered) {
-    fill(neutral, 31);
-    rect(-1, -1, width+1, height+1);
-  }
-
-  if (mePlayer != null && !entered && state == State.SPAWNING) {
-    client.write("spawnat"+mouseX+";"+mouseY+";"+mePlayer.team+";"+mePlayer.number+"\n");
-  }
-
-  if (state == State.END) {
-    if (winner == -1) info("Draw", color(255), false);
-    else info("Team " + winner + " won!", teamColor(winner), false);
+  catch (Exception e) {
+    error(e);
   }
 }
 
@@ -227,144 +237,177 @@ void info(String text, color player, boolean block) {
 }
 
 void mouseReleased() {
-  if (mouseButton == LEFT) { //<>//
-    if (state == State.JOINING) {
-      float xSlice = width/config.teamCount;
+  try {
+    if (mouseButton == LEFT) {
+      if (state == State.JOINING) {
+        float xSlice = width/config.teamCount;
 
-      //mouseX = min(width, max(0, mouseX));
-      //mouseY = min(height, max(0, mouseY));
-      for (int i = 0; i < config.teamCount; i++) {
-        boolean mouseOver = mouseX > xSlice*i && mouseY > 0 && mouseX < xSlice*(i+1) && mouseY < height;
+        //mouseX = min(width, max(0, mouseX));
+        //mouseY = min(height, max(0, mouseY));
+        for (int i = 0; i < config.teamCount; i++) {
+          boolean mouseOver = mouseX > xSlice*i && mouseY > 0 && mouseX < xSlice*(i+1) && mouseY < height;
 
-        if (mouseOver) {
-          client.write(id + "~team" + i);
-          return;
+          if (mouseOver) {
+            client.write(id + "~team" + i);
+            return;
+          }
         }
       }
-    }
 
-    if (state == State.SPAWNING) {
-      println(mePlayer);
-      client.write("done"+mePlayer.team+";"+mePlayer.number+"\n");
-      entered = true;
+      if (state == State.SPAWNING) {
+        println(mePlayer);
+        client.write("done"+mePlayer.team+";"+mePlayer.number+"\n");
+        entered = true;
+      }
     }
+  }
+  catch (Exception e) {
+    error(e);
   }
 }
 
 void mouseWheel(MouseEvent event) {
-  float e = event.getCount()*0.0025;
-  config.inputScale = max(0, config.inputScale-e);
+  try {
+    float e = event.getCount()*0.0025;
+    config.inputScale = max(0, config.inputScale-e);
+  }
+  catch (Exception e) {
+    error(e);
+  }
 }
 
 void keyPressed() {
-  if (!entered && state == State.GAME && mePlayer.alive) {
-    int type = key == config.key0 ? 0 : (key == config.key1 ? 1 :
-      (key == config.key2 ? 2 : (key == config.key3 ? 3 : 
-      (key == config.key4 ? 4 : 5))));
+  try {
+    if (!entered && state == State.GAME && mePlayer.alive) {
+      int type = key == config.key0 ? 0 : (key == config.key1 ? 1 :
+        (key == config.key2 ? 2 : (key == config.key3 ? 3 : 
+        (key == config.key4 ? 4 : 5))));
 
-    if (type >= 0 && type <= 4) {
-      int cost = (int)((type+1)*config.priceFactor*dist(mouseX-mePlayer.xp, mouseY-mePlayer.yp, 0, 0));
+      if (type >= 0 && type <= 4) {
+        int cost = (int)((type+1)*config.priceFactor*dist(mouseX-mePlayer.xp, mouseY-mePlayer.yp, 0, 0));
 
-      if (mePlayer.money >= cost) {
-        mePlayer.money -= cost;
-        client.write("fireat"+(mouseX-mePlayer.xp)*config.inputScale+";"+
-          (mouseY-mePlayer.yp)*config.inputScale+";"
-          +mePlayer.team+";"+mePlayer.number+";"+type+"\n");
+        if (mePlayer.money >= cost) {
+          mePlayer.money -= cost;
+          client.write("fireat"+(mouseX-mePlayer.xp)*config.inputScale+";"+
+            (mouseY-mePlayer.yp)*config.inputScale+";"
+            +mePlayer.team+";"+mePlayer.number+";"+type+"\n");
+        }
       }
     }
+
+    if (state == State.GAME && (key == config.confirm || key == config.confirmAlt)) {
+      client.write("done"+mePlayer.team+";"+mePlayer.number+"\n");
+      entered = true;
+    }
+
+    if (keyCode == ESC) {
+      keyCode = 0;
+      key = 0;
+
+      client.write("reset");
+    }
   }
-
-  if (state == State.GAME && (key == config.confirm || key == config.confirmAlt)) {
-    client.write("done"+mePlayer.team+";"+mePlayer.number+"\n");
-    entered = true;
-  }
-
-  if (keyCode == ESC) {
-    keyCode = 0;
-    key = 0;
-
-    client.write("reset");
+  catch (Exception e) {
+    error(e);
   }
 }
 
 void genMap() {
-  noiseDetail(config.noiseDetail);
+  try {
+    noiseDetail(config.noiseDetail);
 
-  float xOff0 = random(99999);
-  float yOff0 = random(99999);
+    float xOff0 = random(99999);
+    float yOff0 = random(99999);
 
-  float[] xOffs = new float[config.teamCount]; 
-  for (int i = 0; i < config.teamCount; i++) xOffs[i] = random(99999);
+    float[] xOffs = new float[config.teamCount]; 
+    for (int i = 0; i < config.teamCount; i++) xOffs[i] = random(99999);
 
-  float[] yOffs = new float[config.teamCount]; 
-  for (int i = 0; i < config.teamCount; i++) yOffs[i] = random(99999);
+    float[] yOffs = new float[config.teamCount]; 
+    for (int i = 0; i < config.teamCount; i++) yOffs[i] = random(99999);
 
-  float[] avgs = new float[config.teamCount];
-  int count = 0;
+    float[] avgs = new float[config.teamCount];
+    int count = 0;
 
-  long seed = (long)random(Long.MAX_VALUE);
+    long seed = (long)random(Long.MAX_VALUE);
 
-  noiseSeed(seed);
-  map = createImage(width, height, ARGB);
-  map.loadPixels();
+    noiseSeed(seed);
+    map = createImage(width, height, ARGB);
+    map.loadPixels();
 
-  for (int x = 0; x < map.width; x++) {
-    float hei = noise(x * config.scale) * config.amplitude + config.baseHeight;
+    for (int x = 0; x < map.width; x++) {
+      float hei = noise(x * config.scale) * config.amplitude + config.baseHeight;
 
-    for (int y = 0; y < map.height; y++) {
-      if (y < hei || 
-        noise(x * config.floatingScale + xOff0, y * config.floatingScale + yOff0) > 
-        config.floatingThreshold) {
-        for (int i = 0; i < config.teamCount; i++) {
-          avgs[i] += noise(x*config.turfScale+xOffs[i], y*config.turfScale+yOffs[i]);
-        }
-        //float noisecenter = 0.4749;
-        count++;
-
-        map.set(x, height-y, color(255));
-      }
-    }
-  }
-
-  float propabilities[] = new float[config.teamCount];
-
-  for (int i = 0; i < config.teamCount; i++) {
-    propabilities[i] = config.turfPropability * avgs[i] / count;
-  }
-
-  noiseSeed(seed);
-
-  for (int x = 0; x < map.width; x++) {
-    for (int y = 0; y < map.height; y++) {
-      color pixel = map.get(x, height-y);
-
-      if (pixel == color(255)) {
-        float[] randoms = new float[config.teamCount];
-        for (int i = 0; i < config.teamCount; i++) {
-          randoms[i] = noise(x*config.turfScale+xOffs[i], y*config.turfScale+yOffs[i]) / propabilities[i];
-        }
-
-        int max = 0;
-        for (int i = 0; i < config.teamCount; i++) {
-          if (randoms[i] > randoms[max]) {
-            max = i;
+      for (int y = 0; y < map.height; y++) {
+        if (y < hei || 
+          noise(x * config.floatingScale + xOff0, y * config.floatingScale + yOff0) > 
+          config.floatingThreshold) {
+          for (int i = 0; i < config.teamCount; i++) {
+            avgs[i] += noise(x*config.turfScale+xOffs[i], y*config.turfScale+yOffs[i]);
           }
-        }
+          //float noisecenter = 0.4749;
+          count++;
 
-        //println("\n");
-        //printArray(randoms);
-        if (randoms[max] > config.teamCount * 2) {
-          map.set(x, height-y, teamColor(max));
-
-          for (int i = 0; i < config.playersPerTeam; i++) {
-            players[max][i].eco++;
-          }
-        } else {
-          map.set(x, height-y, neutral);
+          map.set(x, height-y, color(255));
         }
       }
     }
-  }
 
-  map.updatePixels();
+    float propabilities[] = new float[config.teamCount];
+
+    for (int i = 0; i < config.teamCount; i++) {
+      propabilities[i] = config.turfPropability * avgs[i] / count;
+    }
+
+    noiseSeed(seed);
+
+    for (int x = 0; x < map.width; x++) {
+      for (int y = 0; y < map.height; y++) {
+        color pixel = map.get(x, height-y);
+
+        if (pixel == color(255)) {
+          float[] randoms = new float[config.teamCount];
+          for (int i = 0; i < config.teamCount; i++) {
+            randoms[i] = noise(x*config.turfScale+xOffs[i], y*config.turfScale+yOffs[i]) / propabilities[i];
+          }
+
+          int max = 0;
+          for (int i = 0; i < config.teamCount; i++) {
+            if (randoms[i] > randoms[max]) {
+              max = i;
+            }
+          }
+
+          //println("\n");
+          //printArray(randoms);
+          if (randoms[max] > config.teamCount * 2) {
+            map.set(x, height-y, teamColor(max));
+
+            for (int i = 0; i < config.playersPerTeam; i++) {
+              players[max][i].eco++;
+            }
+          } else {
+            map.set(x, height-y, neutral);
+          }
+        }
+      }
+    }
+
+    map.updatePixels();
+  }
+  catch (Exception e) {
+    error(e);
+  }
+}
+
+void error(Exception e) {
+  saveStrings("error.txt", new String[] {
+    e.toString(), 
+    "Message: " + e.getMessage(), 
+    "Localized Message: " + e.getLocalizedMessage(), 
+    "Cause: " + e.getCause(), 
+    "Stack Trace: " + e.getStackTrace(), 
+    "Supressed: " + e.getSuppressed(), 
+    });
+    
+  javax.swing.JOptionPane.showMessageDialog(null, "Unexpected error occured: \n" + e.toString() + "\nSee error.txt for more details");
 }
