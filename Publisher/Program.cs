@@ -27,7 +27,7 @@ namespace Publisher
                     dir + name.Substring(11));
                 Directory.CreateDirectory(Path.GetDirectoryName(zipPath));
 
-                string destinationArchiveFileName = Path.GetFileName($"{zipPath}.zip");
+                string destinationArchiveFileName = Path.GetFullPath($"{zipPath}.zip");
                 if (File.Exists(destinationArchiveFileName))
                 {
                     Console.WriteLine($" Detected old {destinationArchiveFileName}...");
