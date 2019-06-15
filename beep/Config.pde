@@ -43,12 +43,14 @@ class Config {
   String ip;
   int port;
 
+  //Server config
   Config(String file) throws Exception {
     String[] contents = loadStrings(file);
 
     deserialize(contents);
   }
 
+  //Client config
   Config(String file, String defaultFile) throws Exception {
     String[] contents = null;
 
@@ -64,7 +66,7 @@ class Config {
       deserializeClient(contents);
       saveStrings("data/" + file, serializeClient());
     } else {
-      deserialize(contents);
+      deserializeClient(contents);
     }
   }
 
