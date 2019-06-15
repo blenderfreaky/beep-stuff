@@ -1,3 +1,6 @@
+net.ip=IP
+net.port=0
+
 ui.font=Blocked-48.vlw
 ui.neutral=FF949494
 ui.red=FF940000

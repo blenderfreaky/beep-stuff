@@ -129,10 +129,10 @@ class Config {
 
   void deserializeClient(String[] contents) throws Exception {
     for (String line : contents) {
-      String[] components = line.replace(" ", "").split("="); 
+      String[] components = line.replace(" ", "").split("=", -1); 
 
-      if (components.length == 0) continue;
-      if (components.length != 2) throw new Exception("Invalid config file, wrong number of arguments. Expected 2, got " + components.length + "\nLine: " + line);
+      if (components.length == 0 || components[0].equals("")) continue;
+      if (components.length != 2) throw new Exception("Invalid config file, wrong number of arguments. Expected 2, got " + components.length + "\nLine: \"" + line + "\"");
 
       switch (components[0]) {
       case "ui.font": 
@@ -164,9 +164,9 @@ class Config {
     deserializeClient(contents); //TODO: This is very inefficient
 
     for (String line : contents) {
-      String[] components = line.replace(" ", "").split("="); 
+      String[] components = line.replace(" ", "").split("=", -1); 
 
-      if (components.length == 0) continue;
+      if (components.length == 0 || components[0].equals("")) continue;
       if (components.length != 2) throw new Exception("Invalid config file, wrong number of arguments. Expected 2, got " + components.length + "\nLine: " + line);
 
       switch (components[0]) {
